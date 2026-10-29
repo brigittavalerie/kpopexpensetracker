@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>K-pop Concert Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#fff7fb;--card:#ffffff;--ink:#3d3550;--mute:#8a819c;--pink:#ffd9ea;--pink-d:#f78fba;--blue:#d9eeff;--blue-d:#6db6ee;--line:#f3d9e6;--ok:#2f9e77;--warn:#d98a00;--bad:#e0436f;--okbg:#dff6ec;--warnbg:#fff1d1;--badbg:#ffe1ea;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1a28;--card:#272336;--ink:#f4eefa;--mute:#a79fba;--pink:#4a2b3e;--blue:#223a52;--line:#3d3550;--okbg:#1c3a2f;--warnbg:#463a17;--badbg:#4a2230}}
+:root[data-theme="dark"]{--bg:#1d1a28;--card:#272336;--ink:#f4eefa;--mute:#a79fba;--pink:#4a2b3e;--blue:#223a52;--line:#3d3550;--okbg:#1c3a2f;--warnbg:#463a17;--badbg:#4a2230}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Poppins',system-ui,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:22px;font-weight:700;margin:0 0 2px}
+.sub{color:var(--mute);margin:0 0 16px;font-size:13px}
+input{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;min-width:0}
+input:focus-visible,button:focus-visible{outline:2px solid var(--blue-d);outline-offset:1px}
+label{font-size:12px;color:var(--mute);font-weight:500;display:block;margin-bottom:4px}
+.ticket{background:linear-gradient(135deg,var(--pink),var(--blue));border-radius:20px;padding:18px;position:relative}
+.ticket::before,.ticket::after{content:"";position:absolute;top:96px;width:20px;height:20px;border-radius:50%;background:var(--bg)}
+.ticket::before{left:-10px}.ticket::after{right:-10px}
+.setup{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-bottom:22px;border-bottom:2px dashed rgba(255,255,255,.9);margin-bottom:16px}
+.setup .full{grid-column:1/-1}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card);border-radius:14px;padding:10px 12px}
+.stat b{display:block;font-size:16px;font-weight:600}
+.stat span{font-size:12px;color:var(--mute)}
+.bar{height:10px;border-radius:99px;background:var(--card);margin-top:14px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--pink-d);border-radius:99px;transition:width .25s}
+.msg{margin-top:12px;border-radius:12px;padding:10px 12px;font-size:13px;font-weight:500}
+.msg.ok{background:var(--okbg);color:var(--ok)}.msg.warn{background:var(--warnbg);color:var(--warn)}.msg.bad{background:var(--badbg);color:var(--bad)}
+.day{background:var(--card);border:1.5px solid var(--line);border-radius:18px;margin-top:14px;overflow:hidden}
+.day>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px;font-weight:600}
+.day>summary::-webkit-details-marker{display:none}
+.chip{background:var(--pink);border-radius:99px;padding:2px 12px;font-size:13px}
+.dsal{margin-left:auto;font-size:13px;font-weight:600}
+.neg{color:var(--bad)}.pos{color:var(--ok)}
+.body{padding:0 14px 14px}
+.head,.row{display:grid;grid-template-columns:1.5fr 1fr 1fr 32px;gap:6px;align-items:center}
+.head{font-size:11px;color:var(--mute);font-weight:500;margin-bottom:4px}
+.row{margin-bottom:8px}
+.row .sal{grid-column:1/-1;font-size:12px;color:var(--mute);margin-top:-4px;padding-left:2px}
+.x{border:0;background:var(--badbg);color:var(--bad);border-radius:8px;height:34px;font-size:16px;cursor:pointer}
+.btn{border:0;background:var(--blue);color:var(--ink);font:inherit;font-weight:600;border-radius:12px;padding:9px 14px;cursor:pointer}
+.btn.p{background:var(--pink-d);color:#fff}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.foot{font-size:12px;color:var(--mute);margin-top:14px}
+[hidden]{display:none!important}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.top #who{font-weight:600}
+.top #stat{margin:0 auto 0 0}
+#login,#uname{padding-top:60px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<div class="wrap" id="login" hidden><h1>K-pop Concert Expense Tracker</h1><p class="sub">Masuk untuk menyimpan progress trip-mu.</p><button class="btn p" id="glogin">Masuk dengan Google</button><p class="foot neg" id="lmsg"></p></div>
+<div class="wrap" id="uname" hidden><h1>Pilih username</h1><p class="sub">Username harus unik dan tidak boleh sama dengan pengguna lain.</p><label for="uinput">Username</label><input id="uinput" maxlength="20" autocapitalize="none" autocomplete="off" placeholder="contoh: valerie.kpop"><p class="foot neg" id="umsg"></p><button class="btn p" id="usave" style="margin-top:12px">Simpan username</button></div>
+<div class="wrap" id="app" hidden>
+<div class="top"><span id="who"></span><span class="foot" id="stat"></span><button class="btn" id="out">Keluar</button></div>
+<h1>K-pop Concert Expense Tracker</h1>
+<p class="sub">Catat budget dan pengeluaran tripmu per hari. Progress tersimpan otomatis di akunmu.</p>
+<div class="ticket">
+<div class="setup">
+<div class="full"><label for="trip">Nama trip</label><input id="trip" placeholder="Contoh: SEVENTEEN Seoul, April 2027"></div>
+<div><label for="budget">Total budget (₩)</label><input id="budget" type="number" inputmode="numeric" min="0" placeholder="3000000"></div><div><label for="rate">Kurs: 1 KRW = Rp</label><input id="rate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="11.7"></div>
+</div>
+<div class="stats">
+<div class="stat"><span>Rencana pengeluaran</span><b id="tPlan">Rp0</b></div>
+<div class="stat"><span>Realita pengeluaran</span><b id="tAct">Rp0</b></div>
+<div class="stat"><span>Saldo</span><b id="tSal">Rp0</b></div>
+<div class="stat"><span>Budget terpakai</span><b id="tPct">0%</b></div>
+</div>
+<div class="bar"><i id="bar"></i></div>
+<div class="msg ok" id="msg"></div>
+</div>
+<div id="days"></div>
+<div class="tools">
+<button class="btn" id="copy">Salin untuk Google Sheets</button>
+<button class="btn" id="reset">Reset semua</button>
+</div>
+<p class="foot" id="foot">Saldo = total budget dikurangi realita pengeluaran. Saldo per baris = rencana dikurangi realita.</p>
+</div>
+<script>
+(function(){
+var S,U=null,SB_URL='https://cgeelufjusddxwlxpoxp.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnZWVsdWZqdXNkZHh3bHhwb3hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyNDk1NjYsImV4cCI6MjEwODgyNTU2Nn0.UoBrcAGe_gFztyxhAcRlE3efxpu63pFlVrBIUD9_6Wk',sb=window.supabase.createClient(SB_URL,SB_KEY);
+function blank(){var d=[];for(var i=0;i<7;i++)d.push([{d:'',b:0,a:0}]);return{trip:'',budget:0,rate:11.7,days:d}}
+S=blank();
+var timer;
+function setStat(t){$('stat').textContent=t}
+function save(){if(!U)return;setStat('Menyimpan…');clearTimeout(timer);timer=setTimeout(function(){sb.from('trips').upsert({user_id:U.id,data:S,updated_at:new Date().toISOString()}).then(function(r){setStat(r.error?'Gagal menyimpan, cek koneksi':'Tersimpan ✓')})},700)}
+function rp(n){return(n<0?'-':'')+'Rp'+Math.abs(Math.round(n)).toLocaleString('id-ID')}
+function w(n){return(n<0?'-':'')+'₩'+Math.abs(Math.round(n)).toLocaleString('en-US')}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function $(i){return document.getElementById(i)}
+function sums(items){var b=0,a=0;items.forEach(function(r){b+=+r.b||0;a+=+r.a||0});return{b:b,a:a}}
+function render(){
+var h='';
+S.days.forEach(function(items,di){
+h+='<details class="day"'+(di===0?' open':'')+'><summary><span class="chip">Hari '+(di+1)+'</span><span class="dsal" id="ds'+di+'"></span></summary><div class="body"><div class="head"><span>Deskripsi</span><span>Rencana (₩)</span><span>Realita (₩)</span><span></span></div>';
+items.forEach(function(r,ri){
+h+='<div class="row"><input data-k="d" data-di="'+di+'" data-ri="'+ri+'" value="'+esc(r.d)+'" placeholder="Tiket, makan, hotel"><input data-k="b" data-di="'+di+'" data-ri="'+ri+'" type="number" inputmode="numeric" min="0" value="'+(r.b||'')+'" placeholder="0"><input data-k="a" data-di="'+di+'" data-ri="'+ri+'" type="number" inputmode="numeric" min="0" value="'+(r.a||'')+'" placeholder="0"><button class="x" data-del="'+di+'-'+ri+'" aria-label="Hapus baris">×</button><div class="sal" id="rs'+di+'-'+ri+'"></div></div>';
+});
+h+='<button class="btn" data-add="'+di+'">+ Tambah baris</button></div></details>';
+});
+var open=[];document.querySelectorAll('.day').forEach(function(d,i){if(d.open)open.push(i)});
+$('days').innerHTML=h;
+if(open.length)document.querySelectorAll('.day').forEach(function(d,i){d.open=open.indexOf(i)>-1});
+calc();
+}
+function calc(){
+var P=0,A=0;
+S.days.forEach(function(items,di){
+var t=sums(items);P+=t.b;A+=t.a;
+var ds=$('ds'+di);if(ds){var s=t.b-t.a;ds.textContent='Saldo '+w(s)+' (≈ '+rp(s*(+S.rate||0))+')';ds.className='dsal '+(s<0?'neg':'pos')}
+items.forEach(function(r,ri){var el=$('rs'+di+'-'+ri);if(el){var s=(+r.b||0)-(+r.a||0);el.textContent='Saldo baris: '+w(s);el.className='sal '+(s<0?'neg':'')}});
+});
+var B=+S.budget||0,sal=B-A,pct=B>0?A/B*100:0;
+$('tPlan').textContent=w(P);$('tAct').textContent=w(A);
+$('tSal').textContent=w(sal);$('tSal').className=sal<0?'neg':'';
+$('tPct').textContent=Math.round(pct)+'%';
+$('bar').style.width=Math.min(100,pct)+'%';
+$('bar').style.background=pct>100?'var(--bad)':pct>=80?'var(--warn)':'var(--pink-d)';
+var m=$('msg'),c,t;
+if(B<=0){c='warn';t='Isi total budget dulu ya, supaya peringatannya aktif.'}
+else if(A>B){c='bad';t='⚠️ Pengeluaran melebihi budget sebesar '+w(A-B)+' (≈ '+rp((A-B)*(+S.rate||0))+').'}
+else if(P>B){c='warn';t='Rencana pengeluaranmu sudah lebih besar dari budget ('+w(P-B)+'). Kurangi sebelum berangkat.'}
+else if(pct>=80){c='warn';t='Hati-hati, budget sudah terpakai '+Math.round(pct)+'%. Sisa '+w(sal)+'.'}
+else{c='ok';t='Aman 💖 Sisa budget '+w(sal)+' (≈ '+rp(sal*(+S.rate||0))+').'}
+m.className='msg '+c;m.textContent=t;
+}
+$('trip').value=S.trip||'';$('budget').value=S.budget||'';$('rate').value=S.rate;
+$('trip').addEventListener('input',function(e){S.trip=e.target.value;save()});
+$('budget').addEventListener('input',function(e){S.budget=+e.target.value||0;save();calc()});
+$('rate').addEventListener('input',function(e){S.rate=+e.target.value||0;save();calc()});
+$('days').addEventListener('input',function(e){
+var t=e.target,k=t.dataset.k;if(!k)return;
+var r=S.days[+t.dataset.di][+t.dataset.ri];
+r[k]=k==='d'?t.value:(+t.value||0);save();calc();
+});
+$('days').addEventListener('click',function(e){
+var t=e.target;
+if(t.dataset.add!==undefined){S.days[+t.dataset.add].push({d:'',b:0,a:0});save();render()}
+if(t.dataset.del!==undefined){var p=t.dataset.del.split('-'),arr=S.days[+p[0]];arr.splice(+p[1],1);if(!arr.length)arr.push({d:'',b:0,a:0});save();render()}
+});
+$('reset').addEventListener('click',function(){
+if(confirm('Hapus semua data trip ini? Tidak bisa dibatalkan.')){S=blank();save();$('trip').value='';$('budget').value='';$('rate').value=S.rate;render()}
+});
+$('copy').addEventListener('click',function(){
+var L=['Hari\tDeskripsi\tRencana (KRW)\tRealita (KRW)\tSaldo (KRW)\tSaldo (IDR)'],R=+S.rate||0,P=0,A=0,B=+S.budget||0;
+S.days.forEach(function(items,di){items.forEach(function(r){var s=(r.b||0)-(r.a||0);P+=r.b||0;A+=r.a||0;if(r.d||r.b||r.a)L.push((di+1)+'\t'+r.d+'\t'+(r.b||0)+'\t'+(r.a||0)+'\t'+s+'\t'+Math.round(s*R))})});
+L.push('Total\t\t'+P+'\t'+A+'\t'+(P-A)+'\t'+Math.round((P-A)*R));
+L.push('Sisa dari budget\t\t\t\t'+(B-A)+'\t'+Math.round((B-A)*R));
+L.push('Kurs\t1 KRW = Rp'+R);
+var f=$('foot'),txt=L.join('\n');
+function done(ok){f.textContent=ok?'Tersalin! Buka Google Sheets lalu tempel (Ctrl+V).':'Gagal menyalin otomatis. Coba lagi di browser lain.'}
+try{navigator.clipboard.writeText(txt).then(function(){done(true)},function(){done(false)})}catch(e){done(false)}
+});
+function show(id){['login','uname','app'].forEach(function(x){$(x).hidden=x!==id})}
+async function enter(session){
+$('lmsg').textContent='';$('umsg').textContent='';
+if(!session){U=null;show('login');return}
+U=session.user;
+var a=await sb.rpc('is_allowed');
+if(!a.data){await sb.auth.signOut();U=null;show('login');$('lmsg').textContent='Email ini belum terdaftar sebagai pembeli. Hubungi penjual kalau kamu sudah membeli.';return}
+var p=await sb.from('profiles').select('username').eq('id',U.id).maybeSingle();
+if(!p.data){show('uname');return}
+$('who').textContent='@'+p.data.username;
+var t=await sb.from('trips').select('data').eq('user_id',U.id).maybeSingle();
+var d=t.data&&t.data.data;
+S=(d&&d.days&&d.days.length===7)?d:blank();
+if(!S.rate)S.rate=11.7;
+$('trip').value=S.trip||'';$('budget').value=S.budget||'';$('rate').value=S.rate;
+setStat('');show('app');render();
+}
+$('glogin').addEventListener('click',function(){sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin}})});
+$('out').addEventListener('click',function(){sb.auth.signOut()});
+$('usave').addEventListener('click',async function(){
+var v=$('uinput').value.trim().toLowerCase();
+if(!/^[a-z0-9_.]{3,20}$/.test(v)){$('umsg').textContent='Username 3 sampai 20 karakter: huruf kecil, angka, titik, atau underscore.';return}
+var r=await sb.from('profiles').insert({id:U.id,username:v});
+if(r.error){$('umsg').textContent=r.error.code==='23505'?'Username sudah dipakai, coba yang lain.':'Gagal menyimpan username. Coba lagi.';return}
+enter({user:U});
+});
+sb.auth.onAuthStateChange(function(ev,s){
+if(ev==='SIGNED_IN'&&U&&s&&s.user.id===U.id)return;
+if(ev==='INITIAL_SESSION'||ev==='SIGNED_IN'||ev==='SIGNED_OUT')setTimeout(function(){enter(s)},0);
+});
+})();
+</script>
+</body>
+</html>
