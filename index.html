@@ -100,6 +100,8 @@ label{font-size:12px;color:var(--mute);font-weight:500;display:block;margin-bott
 </div>
 <div id="days"></div>
 <div class="tools">
+<button class="btn p" id="addday">+ Tambah hari</button>
+<button class="btn" id="delday">Hapus hari terakhir</button>
 <button class="btn" id="copy">Salin untuk Google Sheets</button>
 <button class="btn" id="reset">Reset semua</button>
 </div>
@@ -170,6 +172,16 @@ if(t.dataset.del!==undefined){var p=t.dataset.del.split('-'),arr=S.days[+p[0]];a
 $('reset').addEventListener('click',function(){
 if(confirm('Hapus semua data trip ini? Tidak bisa dibatalkan.')){S=blank();save();$('trip').value='';$('budget').value='';$('rate').value=S.rate;render()}
 });
+$('addday').addEventListener('click',function(){
+S.days.push([{d:'',b:0,a:0}]);save();render();
+var ds=document.querySelectorAll('.day'),l=ds[ds.length-1];l.open=true;l.scrollIntoView({behavior:'smooth',block:'center'});
+});
+$('delday').addEventListener('click',function(){
+if(S.days.length<=1)return;
+var last=S.days[S.days.length-1],has=last.some(function(r){return r.d||r.b||r.a});
+if(has&&!confirm('Hari terakhir berisi data. Tetap dihapus?'))return;
+S.days.pop();save();render();
+});
 $('copy').addEventListener('click',function(){
 var L=['Hari\tDeskripsi\tRencana (KRW)\tRealita (KRW)\tSaldo (KRW)\tSaldo (IDR)'],R=+S.rate||0,P=0,A=0,B=+S.budget||0;
 S.days.forEach(function(items,di){items.forEach(function(r){var s=(r.b||0)-(r.a||0);P+=r.b||0;A+=r.a||0;if(r.d||r.b||r.a)L.push((di+1)+'\t'+r.d+'\t'+(r.b||0)+'\t'+(r.a||0)+'\t'+s+'\t'+Math.round(s*R))})});
@@ -192,7 +204,7 @@ if(!p.data){show('uname');return}
 $('who').textContent='@'+p.data.username;
 var t=await sb.from('trips').select('data').eq('user_id',U.id).maybeSingle();
 var d=t.data&&t.data.data;
-S=(d&&d.days&&d.days.length===7)?d:blank();
+S=(d&&d.days&&d.days.length>=1)?d:blank();
 if(!S.rate)S.rate=11.7;
 $('trip').value=S.trip||'';$('budget').value=S.budget||'';$('rate').value=S.rate;
 setStat('');show('app');render();
