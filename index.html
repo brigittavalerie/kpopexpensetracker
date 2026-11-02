@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>K-pop Concert Expense Tracker</title>
+<title>The K Pocket</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Gluten:wght@700&display=swap">
 <style>
 :root{--bg:#fff7fb;--card:#ffffff;--ink:#3d3550;--mute:#8a819c;--pink:#ffd9ea;--pink-d:#f78fba;--blue:#d9eeff;--blue-d:#6db6ee;--line:#f3d9e6;--ok:#2f9e77;--warn:#d98a00;--bad:#e0436f;--okbg:#dff6ec;--warnbg:#fff1d1;--badbg:#ffe1ea;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -50,6 +50,15 @@ label{font-size:12px;color:var(--mute);font-weight:500;display:block;margin-bott
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
 .foot{font-size:12px;color:var(--mute);margin-top:14px}
 [hidden]{display:none!important}
+.logo{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;line-height:1;font-family:'Gluten','Poppins',cursive;font-weight:700;color:#2a2438;font-size:30px}
+.logo .l1{display:block;transform:rotate(-3deg);transform-origin:left bottom}
+.logo .l2{display:block;transform:rotate(1.5deg);margin-left:.15em;margin-top:-.08em;white-space:nowrap}
+.logo{line-height:.95;letter-spacing:.01em}
+.logo .lsp{position:absolute;right:-.5em;top:.05em;width:.4em;height:.4em}
+.hero .logo{font-size:clamp(52px,8vw,96px)}
+#uname .logo{font-size:38px;margin-bottom:10px}
+.top .logo{font-size:21px}
+.top{flex-wrap:wrap}
 .top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .top #who{font-weight:600}
 .top #stat{margin:0 auto 0 0}
@@ -71,7 +80,7 @@ label{font-size:12px;color:var(--mute);font-weight:500;display:block;margin-bott
 </head>
 <body>
 <div class="auth" id="login" hidden>
-<div class="hero"><svg class="spark" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg><div><small>Konser, trip, dan fangirl budget</small><b>Catat semua pengeluaran konser dan tripmu di satu tempat, tanpa pusing.</b></div></div>
+<div class="hero"><div class="logo" role="img" aria-label="The K Pocket"><span class="l1">the k</span><span class="l2">pocket</span><svg class="lsp" viewBox="0 0 24 24" fill="#f78fba" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg></div><div><small>Konser, trip, dan fangirl budget</small><b>Catat semua pengeluaran konser dan tripmu di satu tempat, tanpa pusing.</b></div></div>
 <div class="panel"><svg class="spark" width="28" height="28" viewBox="0 0 24 24" fill="#f78fba" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg>
 <h1>Your Personal Concert &amp; Travel Expense Tracker</h1>
 <p class="sub">Atur budget, pantau pengeluaran per hari, dan dapat peringatan sebelum dompetmu menangis. Progress tersimpan otomatis di akunmu.</p>
@@ -79,9 +88,9 @@ label{font-size:12px;color:var(--mute);font-weight:500;display:block;margin-bott
 <p class="foot neg" id="lmsg"></p>
 <p class="note">Gunakan akun Google yang kamu daftarkan saat membeli.</p></div>
 </div>
-<div class="wrap" id="uname" hidden><h1>Pilih username</h1><p class="sub">Username harus unik dan tidak boleh sama dengan pengguna lain.</p><label for="uinput">Username</label><input id="uinput" maxlength="20" autocapitalize="none" autocomplete="off" placeholder="contoh: valerie.kpop"><p class="foot neg" id="umsg"></p><button class="btn p" id="usave" style="margin-top:12px">Simpan username</button></div>
+<div class="wrap" id="uname" hidden><div class="logo" role="img" aria-label="The K Pocket"><span class="l1">the k</span><span class="l2">pocket</span><svg class="lsp" viewBox="0 0 24 24" fill="#f78fba" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg></div><h1>Pilih username</h1><p class="sub">Username harus unik dan tidak boleh sama dengan pengguna lain.</p><label for="uinput">Username</label><input id="uinput" maxlength="20" autocapitalize="none" autocomplete="off" placeholder="contoh: valerie.kpop"><p class="foot neg" id="umsg"></p><button class="btn p" id="usave" style="margin-top:12px">Simpan username</button></div>
 <div class="wrap" id="app" hidden>
-<div class="top"><span id="who"></span><span class="foot" id="stat"></span><button class="btn" id="out">Keluar</button></div>
+<div class="top"><div class="logo" role="img" aria-label="The K Pocket"><span class="l1">the k</span><span class="l2">pocket</span><svg class="lsp" viewBox="0 0 24 24" fill="#f78fba" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg></div><span id="who"></span><span class="foot" id="stat"></span><button class="btn" id="out">Keluar</button></div>
 <h1>Your Personal Trip Expense Tracker</h1>
 <p class="sub">Catat budget dan pengeluaran tripmu per hari. Progress tersimpan otomatis di akunmu.</p>
 <div class="ticket">
